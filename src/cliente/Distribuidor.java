@@ -17,18 +17,16 @@ public class Distribuidor {
     
     // IPs dos servidores Receptores (modifique conforme necessário)
     private static final String[] IPS_SERVIDORES = {
-        "localhost",  // Para testes locais
-        // "192.168.1.100",
-        // "192.168.1.101",
-        // "192.168.1.102"
+        "127.0.0.1",
+        "127.0.0.1",
+        "127.0.0.1",
     };
     
     // Portas dos servidores (para testes locais com múltiplas portas)
     private static final int[] PORTAS_SERVIDORES = {
         12345,
-        // 12346,
-        // 12347,
-        // 12348
+        12346,
+        12347,
     };
     
     public static void main(String[] args) {
@@ -49,19 +47,20 @@ public class Distribuidor {
         log("\n=== Gerando vetor de " + String.format("%,d", tamanhoVetor) + " elementos ===");
         long inicioGeracao = System.currentTimeMillis();
         
-        int[] vetorCompleto = new int[tamanhoVetor];
+        // ✅ MUDANÇA: Usar byte[] em vez de int[]
+        byte[] vetorCompleto = new byte[tamanhoVetor];
         Random random = new Random();
         
         // Gera números aleatórios entre -100 e 100
         for (int i = 0; i < tamanhoVetor; i++) {
-            vetorCompleto[i] = random.nextInt(201) - 100;
+            vetorCompleto[i] = (byte) (random.nextInt(201) - 100);
         }
         
         long fimGeracao = System.currentTimeMillis();
         log("Vetor gerado em " + (fimGeracao - inicioGeracao) + "ms");
         
         // Escolhe o número a procurar
-        int numeroProcurado;
+        byte numeroProcurado;  // ✅ MUDANÇA: byte em vez de int
         if (opcao == 2) {
             numeroProcurado = 111; // Número que não existe no vetor
             log("Número a procurar: " + numeroProcurado + " (não existe no vetor)");
@@ -69,6 +68,13 @@ public class Distribuidor {
             int posicaoAleatoria = random.nextInt(tamanhoVetor);
             numeroProcurado = vetorCompleto[posicaoAleatoria];
             log("Número a procurar: " + numeroProcurado + " (escolhido da posição " + posicaoAleatoria + ")");
+        }
+        
+        // Pergunta se quer exibir o vetor
+        System.out.print("\nDeseja exibir o vetor completo? (s/n): ");
+        String exibir = scanner.next().toLowerCase();
+        if (exibir.equals("s")) {
+            exibirVetor(vetorCompleto);
         }
         
         // Inicia a contagem distribuída
@@ -87,8 +93,8 @@ public class Distribuidor {
             final int fim = (i == numServidores - 1) ? tamanhoVetor : (i + 1) * tamanhoParte;
             final int tamanhoParteAtual = fim - inicio;
             
-            // Cria cópia da parte do vetor
-            int[] parte = Arrays.copyOfRange(vetorCompleto, inicio, fim);
+            // ✅ MUDANÇA: Cria cópia da parte do vetor como byte[]
+            byte[] parte = Arrays.copyOfRange(vetorCompleto, inicio, fim);
             
             log("Thread " + i + " -> Servidor " + IPS_SERVIDORES[i] + ":" + PORTAS_SERVIDORES[i] + 
                 " (elementos " + inicio + " a " + (fim-1) + ", total: " + String.format("%,d", tamanhoParteAtual) + ")");
@@ -125,7 +131,7 @@ public class Distribuidor {
     /**
      * Processa uma parte do vetor em um servidor específico
      */
-    private static void processarParte(String ip, int porta, int[] parte, int procurado, int indiceThread) {
+    private static void processarParte(String ip, int porta, byte[] parte, byte procurado, int indiceThread) {
         try (
             Socket socket = new Socket(ip, porta);
             ObjectOutputStream transmissor = new ObjectOutputStream(socket.getOutputStream());
@@ -161,6 +167,26 @@ public class Distribuidor {
         } catch (ClassNotFoundException e) {
             log("Thread " + indiceThread + ": Classe não encontrada - " + e.getMessage());
         }
+    }
+    
+    /**
+     * Exibe o vetor completo (útil para testes com vetores pequenos)
+     */
+    private static void exibirVetor(byte[] vetor) {
+        log("\n=== Vetor Completo ===");
+        System.out.print("[");
+        for (int i = 0; i < vetor.length; i++) {
+            System.out.print(vetor[i]);
+            if (i < vetor.length - 1) {
+                System.out.print(", ");
+            }
+            // Quebra linha a cada 20 elementos para melhor visualização
+            if ((i + 1) % 20 == 0) {
+                System.out.println();
+            }
+        }
+        System.out.println("]");
+        log("===================\n");
     }
     
     /**
