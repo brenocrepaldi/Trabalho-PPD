@@ -5,8 +5,6 @@ package comunicacao;
  * Contém a contagem de ocorrências encontradas
  */
 public class Resposta extends Comunicado {
-    private static final long serialVersionUID = 1L;
-    
     private final Integer contagem;
     
     public Resposta(int contagem) {

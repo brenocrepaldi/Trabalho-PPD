@@ -7,5 +7,4 @@ import java.io.Serializable;
  * Serve como superclasse para Pedido, Resposta e ComunicadoEncerramento
  */
 public class Comunicado implements Serializable {
-    private static final long serialVersionUID = 1L;
 }

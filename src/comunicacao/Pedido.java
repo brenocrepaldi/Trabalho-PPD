@@ -8,22 +8,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Contém o vetor de números e o número a ser procurado
  */
 public class Pedido extends Comunicado {
-    private static final long serialVersionUID = 1L;
-    
     private final int[] numeros;
     private final int procurado;
     
     public Pedido(int[] numeros, int procurado) {
         this.numeros = numeros;
         this.procurado = procurado;
-    }
-    
-    public int[] getNumeros() {
-        return numeros;
-    }
-    
-    public int getProcurado() {
-        return procurado;
     }
     
     /**

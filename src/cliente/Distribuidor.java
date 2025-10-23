@@ -143,8 +143,7 @@ public class Distribuidor {
             // Recebe a resposta
             Object objeto = receptor.readObject();
             
-            if (objeto instanceof Resposta) {
-                Resposta resposta = (Resposta) objeto;
+            if (objeto instanceof Resposta resposta) {
                 int contagem = resposta.getContagem();
                 contagemTotal.addAndGet(contagem);
                 log("Thread " + indiceThread + ": Resposta de " + ip + ":" + porta + " -> " + contagem + " ocorrências");

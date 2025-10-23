@@ -17,6 +17,25 @@ Sistema distribuído que realiza contagem de ocorrências de números em um gran
 
 ---
 
+## 💻 Compatibilidade de Plataformas
+
+Este projeto é **multiplataforma** e funciona em:
+- ✅ **Windows** (CMD e PowerShell)
+- ✅ **macOS**
+- ✅ **Linux**
+
+### Instruções Específicas para Windows
+
+**Usuários Windows:** Este projeto inclui o arquivo `compilar.bat` para facilitar a compilação. Todas as instruções no README incluem comandos específicos para Windows (CMD e PowerShell) além dos comandos Unix.
+
+**Observações importantes:**
+- Use `compilar.bat` ao invés de `compilar.sh`
+- Use barras invertidas (`\`) nos caminhos ao invés de barras normais (`/`)
+- Certifique-se de que o Java JDK está instalado e configurado no PATH do sistema
+- Para verificar se o Java está configurado corretamente: `java -version` e `javac -version`
+
+---
+
 ## 🏗️ Estrutura do Projeto
 
 ```
@@ -48,15 +67,38 @@ atividade2310/
 
 ### 1. Compilar o Projeto
 
+#### Linux/macOS
 ```bash
 chmod +x compilar.sh
 ./compilar.sh
 ```
 
+#### Windows
+```cmd
+compilar.bat
+```
+
+**Nota para Windows:** Se você estiver usando PowerShell, pode executar:
+```powershell
+.\compilar.bat
+```
+
 ### 2. Executar o Receptor (Servidor)
 
-**Terminal 1:**
+**Terminal 1 (Linux/macOS):**
 ```bash
+cd bin
+java servidor.Receptor
+```
+
+**Terminal 1 (Windows - CMD):**
+```cmd
+cd bin
+java servidor.Receptor
+```
+
+**Terminal 1 (Windows - PowerShell):**
+```powershell
 cd bin
 java servidor.Receptor
 ```
@@ -70,8 +112,20 @@ Deixe este terminal aberto. Você verá:
 
 ### 3. Executar o Distribuidor (Cliente)
 
-**Terminal 2:**
+**Terminal 2 (Linux/macOS):**
 ```bash
+cd bin
+java cliente.Distribuidor
+```
+
+**Terminal 2 (Windows - CMD):**
+```cmd
+cd bin
+java cliente.Distribuidor
+```
+
+**Terminal 2 (Windows - PowerShell):**
+```powershell
 cd bin
 java cliente.Distribuidor
 ```
@@ -92,8 +146,20 @@ java cliente.Distribuidor
 
 ### 4. Executar Versão Sequencial (para comparação)
 
-**Terminal 3:**
+**Terminal 3 (Linux/macOS):**
 ```bash
+cd bin
+java sequencial.ContagemSequencial
+```
+
+**Terminal 3 (Windows - CMD):**
+```cmd
+cd bin
+java sequencial.ContagemSequencial
+```
+
+**Terminal 3 (Windows - PowerShell):**
+```powershell
 cd bin
 java sequencial.ContagemSequencial
 ```
@@ -106,7 +172,20 @@ Use os mesmos parâmetros do Distribuidor e compare os tempos.
 
 ### Teste Simples de Comunicação
 
+**Linux/macOS:**
 ```bash
+cd bin
+java teste.TesteSimples
+```
+
+**Windows (CMD):**
+```cmd
+cd bin
+java teste.TesteSimples
+```
+
+**Windows (PowerShell):**
+```powershell
 cd bin
 java teste.TesteSimples
 ```
@@ -125,7 +204,20 @@ Execute o Distribuidor com opção `2`. O número 111 não existe no intervalo [
 
 ### Descobrir Tamanho Máximo de Vetor
 
+**Linux/macOS:**
 ```bash
+cd bin
+java -Xmx8G util.MaiorVetorAproximado
+```
+
+**Windows (CMD):**
+```cmd
+cd bin
+java -Xmx8G util.MaiorVetorAproximado
+```
+
+**Windows (PowerShell):**
+```powershell
 cd bin
 java -Xmx8G util.MaiorVetorAproximado
 ```
@@ -168,8 +260,14 @@ private static final int[] PORTAS_SERVIDORES = {
 
 ### 3. Recompilar e Executar
 
+**Linux/macOS:**
 ```bash
 ./compilar.sh
+```
+
+**Windows:**
+```cmd
+compilar.bat
 ```
 
 Execute o Receptor em cada servidor, depois execute o Distribuidor.
@@ -244,29 +342,62 @@ Execute o Receptor em cada servidor, depois execute o Distribuidor.
 ### "Address already in use"
 **Problema:** Porta 12345 já está em uso  
 **Solução:**
-```bash
-# macOS/Linux
-lsof -ti:12345 | xargs kill -9
 
-# Windows
+**Linux/macOS:**
+```bash
+lsof -ti:12345 | xargs kill -9
+```
+
+**Windows (CMD - Execute como Administrador):**
+```cmd
 netstat -ano | findstr :12345
 taskkill /PID <PID> /F
+```
+
+**Windows (PowerShell - Execute como Administrador):**
+```powershell
+Get-NetTCPConnection -LocalPort 12345 | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force }
 ```
 
 ### "OutOfMemoryError"
 **Problema:** Vetor muito grande para memória disponível  
 **Solução:**
+
+**Linux/macOS:**
 ```bash
 java -Xmx8G cliente.Distribuidor
 ```
 
+**Windows:**
+```cmd
+java -Xmx8G cliente.Distribuidor
+```
+
 ### Firewall bloqueando conexões
+
 **macOS:**
 ```bash
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add $(which java)
 ```
 
-**Windows:** Adicione Java nas exceções do Firewall
+**Linux (UFW):**
+```bash
+sudo ufw allow 12345/tcp
+```
+
+**Windows:**
+1. Abra o **Firewall do Windows Defender com Segurança Avançada**
+2. Clique em **Regras de Entrada** → **Nova Regra**
+3. Selecione **Porta** → **Avançar**
+4. Escolha **TCP** e digite **12345** → **Avançar**
+5. Selecione **Permitir a conexão** → **Avançar**
+6. Marque todos os perfis (Domínio, Privado, Público) → **Avançar**
+7. Dê um nome (ex: "Java Receptor") → **Concluir**
+
+Alternativamente, via PowerShell (Execute como Administrador):
+```powershell
+New-NetFirewallRule -DisplayName "Java Receptor" -Direction Inbound -Protocol TCP -LocalPort 12345 -Action Allow
+```
 
 ---
 
@@ -410,7 +541,9 @@ public class Distribuidor {
 
 ### Checklist
 
-1. ✅ Compilar: `./compilar.sh`
+1. ✅ Compilar:
+   - **Linux/macOS:** `./compilar.sh`
+   - **Windows:** `compilar.bat`
 2. ✅ Iniciar Receptor
 3. ✅ Executar Distribuidor com 1 milhão de elementos
 4. ✅ Executar Sequencial com mesmos parâmetros
